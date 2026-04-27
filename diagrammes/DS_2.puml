@@ -1,0 +1,58 @@
+@startuml
+title Diagramme de séquence avancé - GreenWaste
+
+actor "Opérateur industriel" as Operateur
+actor "Responsable HSE" as HSE
+actor "Collecteur" as Collecteur
+actor "Administrateur" as Admin
+
+participant "Système" as Systeme
+participant "Base de données" as DB
+participant "Service Notification" as Notif
+participant "Service Facturation" as Facture
+
+== Déclaration des déchets ==
+loop pour chaque déchet
+    Operateur -> Systeme : declarerDechet()
+    Systeme -> DB : enregistrerDechet()
+    DB --> Systeme : confirmation
+end
+
+== Planification collecte ==
+HSE -> Systeme : planifierCollecte()
+
+opt si date valide
+    Systeme -> DB : enregistrerCollecte()
+    Systeme -> Notif : envoyerNotification()
+    Notif -> Collecteur : notification
+end
+
+== Confirmation collecte ==
+Collecteur -> Systeme : confirmerCollecte()
+
+alt Collecte acceptée
+    Systeme -> DB : majStatut("Confirmée")
+else Collecte refusée
+    Systeme -> DB : majStatut("Refusée")
+end
+
+== Collecte effectuée ==
+Collecteur -> Systeme : marquerEffectuee()
+Systeme -> DB : majStatut("Effectuée")
+
+== Génération facture ==
+opt si collecte effectuée
+    Systeme -> Facture : genererFacture()
+    Facture -> DB : enregistrerFacture()
+    DB --> Facture : OK
+    Facture --> Systeme : factureGenerée
+    Systeme -> HSE : envoyerFacture()
+end
+
+== Consultation admin ==
+Admin -> Systeme : consulterDashboard()
+Systeme -> DB : recupererDonnees()
+DB --> Systeme : données
+Systeme --> Admin : afficherDashboard()
+
+@enduml
