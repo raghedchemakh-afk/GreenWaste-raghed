@@ -1,0 +1,133 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam nodesep 100
+skinparam ranksep 80
+
+title GreenWaste - Diagramme de Classes Final (Répartition par Membre)
+
+
+package "Module Sécurité (Raghed)" #LightBlue {
+    class Utilisateur {
+        - id : int
+        - nom : String
+        - email : String
+        - motDePasse : String
+        + Utilisateur()
+        + Utilisateur(id: int, nom: String, email: String)
+        + sInscrire() : void
+        + seConnecter() : boolean
+        + getNom() : String
+        + setNom(nom : String) : void
+    }
+
+    class Authentification  {
+        - dateDerniereConnexion : Date
+        - tentativeEchouees : int
+        + Authentification()
+        + verifierIdentifiants(email: String, mdp: String) : boolean
+        + réinitialiserMotDePasse() : void
+    }
+}
+
+
+package "Module Conformité (Sima)" #FFF9C4 {
+    class Alerte  {
+        - idAlerte : int
+        - niveauGravite : String
+        - message : String
+        + Alerte()
+        + Alerte(id: int, gravite: String)
+        + declencherAlerte() : void
+        + notifierInspecteur() : void
+        + getMessage() : String
+    }
+
+    class SeuilReglementaire {
+        - typeDechet : String
+        - volumeMax : double
+        + SeuilReglementaire()
+        + SeuilReglementaire(type: String, max: double)
+        + verifierConformite(volume: double) : boolean
+        + getVolumeMax() : double
+    }
+}
+
+
+package "Module Administration (Maha)" #F3E5F5 {
+    class Administrateur  {
+        - niveauAcces : int
+        + Administrateur()
+        + Administrateur(id: int, nom: String, niveau: int)
+        + gererUtilisateurs() : void
+        + validerInscription() : void
+    }
+
+    class Rapport {
+        - idRapport : int
+        - dateGeneration : Date
+        + Rapport()
+        + Rapport(id: int)
+        + afficherTableauDeBord() : void
+        + genererStatistiques() : void
+    }
+}
+
+
+package "Module Finance (Bechir)" #FFEBEE {
+    class Facture  {
+        - numFacture : String
+        - montantHT : double
+        - tva : double
+        + Facture()
+        + Facture(num: String, montant: double)
+        + calculerMontantTTC() : double
+        + genererFacture() : void
+        + getMontantHT() : double
+    }
+
+    class Paiement  {
+        - idTransaction : String
+        - modePaiement : String
+        + Paiement()
+        + Paiement(id: String, mode: String)
+        + validerPaiement() : void
+    }
+}
+
+
+package "Module Logistique (Mariem)" #E8F5E9 {
+    class Collecte  {
+        - idCollecte : int
+        - datePrevue : Date
+        - statut : String
+        - typeDechet : String
+        + Collecte()
+        + Collecte(id: int, type: String, date: Date)
+        + planifierCollecte() : void
+        + mettreAJourStatut(nouveauStatut: String) : void
+        + getStatut() : String
+    }
+
+    class Collecteur {
+        - nomSociete : String
+        - disponibilite : boolean
+        + Collecteur()
+        + Collecteur(nom: String)
+        + confirmerReception() : void
+        + isDisponible() : boolean
+    }
+}
+
+
+Utilisateur <|-- Administrateur : "hérite de"
+Utilisateur "1" *-- "1" Authentification : "possède"
+Administrateur "1" -- "*" Utilisateur : "gère"
+Administrateur "1" -- "*" Rapport : "consulte"
+Utilisateur "1" -- "*" Collecte : "planifie"
+Collecte "*" o-- "1" Collecteur : "est effectuée par"
+Collecte "1" -- "1" Facture : "génère"
+Facture "1" -- "1" Paiement : "est liée à"
+Collecte "*" -- "0..1" Alerte : "peut déclencher"
+Alerte "*" -- "1" SeuilReglementaire : "se base sur"
+
+@enduml
